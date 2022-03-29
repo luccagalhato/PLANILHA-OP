@@ -70,7 +70,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	print(client.Username)
 	delete(Tokens, "1")
 	token := genKey()
 	Tokens[token] = 1
