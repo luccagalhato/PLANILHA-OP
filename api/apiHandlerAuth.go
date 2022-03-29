@@ -47,7 +47,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, entries, _, err := auth.AuthenticateExtended(config, username, client.Userpassword, []string{"memberOf"}, nil)
-	// block := true
+	block := true
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(models.Response{
@@ -61,21 +61,21 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if entries != nil {
 		for _, value := range entries.GetAttributeValues("memberOf") {
 			if strings.Contains(value, c.Yml.AUTH.Grupo) {
-				// block = false
+				block = false
 				break
 			}
 		}
 	}
 
-	// if block {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	json.NewEncoder(w).Encode(models.Response{
-	// 		Status: "Unauthorized",
-	// 		Error:  "",
-	// 		Data:   "Senha ou username inválidos",
-	// 	})
-	// 	return
-	// }
+	if block {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(models.Response{
+			Status: "Unauthorized",
+			Error:  "",
+			Data:   "Senha ou username inválidos",
+		})
+		return
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
