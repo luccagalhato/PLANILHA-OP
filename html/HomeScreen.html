@@ -234,34 +234,40 @@
         let idexcel;
         async function findallOP() {
             var op = document.getElementById("inputop").value
-            var cod = {
-                "cod": op
-            };
-            var body = JSON.stringify(cod);
-            var myInit = {
-                method: "POST",
-                headers: headers(),
-                mode: "cors",
-                cache: "default",
-                body: body,
-            };
-            const response = await fetch(`${window.location.protocol}//${window.location.host}/selectop`, myInit);
-            const blob = await response.blob();
-            const text = await blob.text();
-            const data = JSON.parse(text);
 
-            if (data.Status != "OK") {
-                console.log("Error", data.Error);
-                return;
+            if (op != null) {
+                var cod = {
+                    "cod": op
+                };
+                var body = JSON.stringify(cod);
+                var myInit = {
+                    method: "POST",
+                    headers: headers(),
+                    mode: "cors",
+                    cache: "default",
+                    body: body,
+                };
+                const response = await fetch(`${window.location.protocol}//${window.location.host}/selectop`, myInit);
+                const blob = await response.blob();
+                const text = await blob.text();
+                const data = JSON.parse(text);
+
+                if (data.Status != "OK") {
+                    console.log("Error", data.Error);
+                    return alert("OP Não encontrada")
+                }
+                // removeAllChildNodes(document.getElementById("tbody"))
+                let OPS = data.Data;
+                idexcel = data.Id;
+                var rows = [];
+                OPS.forEach((item, index) => {
+                    rows.push([item.referencia, item.ean13, item.nome, item.cor, item.tamanho, item.unidade, item.quantidade, item.extra1, item.extra2, item.extra20, item.grupo]);
+                });
+                $table.rows.add(rows).draw();
             }
-            // removeAllChildNodes(document.getElementById("tbody"))
-            let OPS = data.Data;
-            idexcel = data.Id;
-            var rows = [];
-            OPS.forEach((item, index) => {
-                rows.push([item.referencia, item.ean13, item.nome, item.cor, item.tamanho, item.unidade, item.quantidade, item.extra1, item.extra2, item.extra20, item.grupo]);
-            });
-            $table.rows.add(rows).draw();
+            return alert("Favor inserir OP");
+
+
         }
         // document.getElementById("Inputmodalncm").addEventListener('focusout', async function(e) {
         //     await SelectOP(e.target.value)
