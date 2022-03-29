@@ -12,6 +12,7 @@ func (s *SQLStr) SelectOPDatabase(OP string) ([]Op, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	OPS := make(OPS, 0)
 	for rows.Next() {
 		ops := Op{}
@@ -32,6 +33,10 @@ func (s *SQLStr) SelectOPDatabase(OP string) ([]Op, error) {
 			Ex20:    ops.Ex20,
 			Grupo:   ops.Grupo,
 		})
+	}
+	var result int = len(OPS)
+	if result == 0 {
+		return nil, nil
 	}
 	return OPS, nil
 }

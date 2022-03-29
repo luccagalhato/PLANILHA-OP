@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"op/models"
+	"op/models"	
 )
 
 type NewOP struct {
@@ -21,7 +21,7 @@ func SelectOP(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-
+	
 	data, err := connectionLinx.SelectOPDatabase(NewOP.Cod)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -31,6 +31,19 @@ func SelectOP(w http.ResponseWriter, r *http.Request) {
 			Data:   err.Error(),
 		})
 		return
+	}
+
+	if data == nil {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
+		w.Header().Set("access-control-expose-headers", "*")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(models.ResponseExcell{
+			Status: "Bad Request",
+			Error:  "",
+			Data:   "OP Não encontrada",
+		})
+		return 
 	}
 	excels := gerarExcel(data, NewOP.Cod)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -45,5 +58,4 @@ func SelectOP(w http.ResponseWriter, r *http.Request) {
 		Data:   data,
 		Id:     excels,
 	})
-
 }

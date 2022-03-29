@@ -232,6 +232,7 @@
             return h
         }
         let idexcel;
+
         async function findallOP() {
             var op = document.getElementById("inputop").value
 
@@ -246,7 +247,7 @@
                     mode: "cors",
                     cache: "default",
                     body: body,
-                };
+                }
                 const response = await fetch(`${window.location.protocol}//${window.location.host}/selectop`, myInit);
                 const blob = await response.blob();
                 const text = await blob.text();
@@ -255,16 +256,18 @@
                 if (data.Status != "OK") {
                     console.log("Error", data.Error);
                     return alert("OP Não encontrada")
+                } else {
+                    // removeAllChildNodes(document.getElementById("tbody"))
+                    let OPS = data.Data;
+                    idexcel = data.Id;
+                    var rows = [];
+                    OPS.forEach((item, index) => {
+                        rows.push([item.referencia, item.ean13, item.nome, item.cor, item.tamanho, item.unidade, item.quantidade, item.extra1, item.extra2, item.extra20, item.grupo]);
+                    });
+                    $table.rows.add(rows).draw();
+                    return;
                 }
-                // removeAllChildNodes(document.getElementById("tbody"))
-                let OPS = data.Data;
-                idexcel = data.Id;
-                var rows = [];
-                OPS.forEach((item, index) => {
-                    rows.push([item.referencia, item.ean13, item.nome, item.cor, item.tamanho, item.unidade, item.quantidade, item.extra1, item.extra2, item.extra20, item.grupo]);
-                });
-                $table.rows.add(rows).draw();
-                return;
+
             }
             return alert("Favor inserir OP");
         }
@@ -286,7 +289,10 @@
                     body: body,
                 };
                 var response = await fetch(
-                    `${window.location.protocol}//${window.location.host}/id`,
+                    `
+                    $ {
+                        window.location.protocol
+                    } //${window.location.host}/id`,
                     myInit
                 );
                 var myBlob = await response.blob();
