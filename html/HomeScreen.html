@@ -264,10 +264,9 @@
                     rows.push([item.referencia, item.ean13, item.nome, item.cor, item.tamanho, item.unidade, item.quantidade, item.extra1, item.extra2, item.extra20, item.grupo]);
                 });
                 $table.rows.add(rows).draw();
+                return;
             }
             return alert("Favor inserir OP");
-
-
         }
         // document.getElementById("Inputmodalncm").addEventListener('focusout', async function(e) {
         //     await SelectOP(e.target.value)
