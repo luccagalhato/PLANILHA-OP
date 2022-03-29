@@ -12,7 +12,7 @@ import (
 	auth "github.com/korylprince/go-ad-auth/v3"
 )
 
-// Token ...
+// Tokens ...
 var Tokens map[string]byte = map[string]byte{}
 
 //Login ...
@@ -31,11 +31,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := strings.Split(client.Username, `\`)
-	username := strings.Join(user[1:], "\\")
+	username := client.Username
 	if len(user) > 1 {
+		username = strings.Join(user[1:], "\\")
 		domain = user[0] + "." + domain
 		baseDN = fmt.Sprintf("DC=%s,%s", user[0], baseDN)
-
 	}
 	config := &auth.Config{
 		// Server: "alfa.local",
@@ -48,6 +48,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	_, entries, _, err := auth.AuthenticateExtended(config, username, client.Userpassword, []string{"memberOf"}, nil)
 	block := true
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(models.Response{
+			Status: "Unauthorized",
+			Error:  "",
+			Data:   err.Error(),
+		})
+		return
+	}
 	fmt.Println(entries)
 	if entries != nil {
 		for _, value := range entries.GetAttributeValues("memberOf") {

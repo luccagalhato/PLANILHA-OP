@@ -9,8 +9,10 @@ import (
 	"time"
 )
 
+//Controllers ...
 func Controllers() {
-	log.Printf("starting server '%s' at port: %s", c.Yml.API.Host, c.Yml.API.Port)
+	log.Printf("starting server at port: %s", c.Yml.API.Port)
+	http.HandleFunc("/", redirect)
 	http.Handle("/id", &Auth{api.DownloadExcell, true})
 	http.Handle("/selectop", &Auth{api.SelectOP, true})
 	http.HandleFunc("/login", api.Login)

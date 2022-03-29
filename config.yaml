@@ -7,7 +7,7 @@ sqllinx:
   username: ti_consulta 
   password: consulta
 auth: 
-  server: "10.36.192.31"
+  server: alfa.local
   port: 389
   basedn: DC=alfa,DC=local
   grupo : api_fiscal
