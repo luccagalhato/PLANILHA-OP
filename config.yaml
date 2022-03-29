@@ -1,6 +1,6 @@
 api:
   host: localhost
-  port: 8081
+  port: 1000
 sqllinx:
   host: 10.58.192.51
   port: 1433

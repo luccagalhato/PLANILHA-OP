@@ -15,7 +15,7 @@ var connectionLinx *database.SQLStr
 var err error
 
 func init() {
-	
+
 	flag.BoolVar(&createConfig, "c", false, "create config.yaml file")
 	flag.Parse()
 

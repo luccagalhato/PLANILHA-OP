@@ -47,6 +47,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, entries, _, err := auth.AuthenticateExtended(config, username, client.Userpassword, []string{"memberOf"}, nil)
+	// fmt.Println(s, g)
 	block := true
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -57,7 +58,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	fmt.Println(entries)
+
 	if entries != nil {
 		for _, value := range entries.GetAttributeValues("memberOf") {
 			if strings.Contains(value, c.Yml.AUTH.Grupo) {
@@ -72,7 +73,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(models.Response{
 			Status: "Unauthorized",
 			Error:  "",
-			Data:   "Senha ou username inválidos",
+			Data:   "Senha ou username inválidos ou nao pertence ao grupo 'Criacao'",
 		})
 		return
 	}
@@ -101,7 +102,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func Logout(w http.ResponseWriter, r *http.Request) {
 
 	if data, err := r.Cookie("Token"); err == nil {
-		fmt.Println(data.Value)
+
 		delete(Tokens, data.Value)
 	} else {
 		log.Println(err)
@@ -113,7 +114,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	w.Header().Set("Pragma", "no-cache")
-	fmt.Println(Tokens)
+
 	json.NewEncoder(w).Encode(models.Response{
 		Status: "OK",
 		Error:  "",

@@ -2,7 +2,6 @@ package sql
 
 import (
 	"context"
-	"fmt"
 )
 
 func (s *SQLStr) FindAll() ([]Op, error) {
@@ -14,7 +13,7 @@ func (s *SQLStr) FindAll() ([]Op, error) {
 	for rows.Next() {
 		ops := Op{}
 		if err := rows.Scan(&ops.Ref, &ops.Ean, &ops.Nome, &ops.Cor, &ops.Tamanho, &ops.Uni, &ops.Quanti, &ops.Ex1, &ops.Ex2, &ops.Ex20, &ops.Grupo); err != nil {
-			fmt.Println(err, ops)
+			// fmt.Println(err, ops)
 			continue
 		}
 		OPS = append(OPS, Op{
