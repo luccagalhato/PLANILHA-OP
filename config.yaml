@@ -10,4 +10,4 @@ auth:
   server: alfa.local
   port: 389
   basedn: DC=alfa,DC=local
-  grupo : api_fiscal
+  grupo : Criacao
