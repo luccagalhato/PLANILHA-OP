@@ -264,6 +264,8 @@
                     OPS.forEach((item, index) => {
                         rows.push([item.referencia, item.ean13, item.nome, item.cor, item.tamanho, item.unidade, item.quantidade, item.extra1, item.extra2, item.extra20, item.grupo]);
                     });
+                    $table.clear().draw();
+                    // $table.rows.remove().draw();
                     $table.rows.add(rows).draw();
                     return;
                 }
