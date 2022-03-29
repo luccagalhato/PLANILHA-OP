@@ -2,8 +2,11 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
-	"op/models"	
+	sql "op/database"
+	"op/models"
 )
 
 type NewOP struct {
@@ -21,7 +24,15 @@ func SelectOP(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	
+	if NewOP.Cod == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(models.Response{
+			Status: "Bad Request",
+			Error:  "",
+			Data:   "Favor Inserir uma OP válida",
+		})
+	}
+
 	data, err := connectionLinx.SelectOPDatabase(NewOP.Cod)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -32,30 +43,54 @@ func SelectOP(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-
-	if data == nil {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
-		w.Header().Set("access-control-expose-headers", "*")
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(models.ResponseExcell{
-			Status: "Bad Request",
+	if len(data) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(models.Response{
+			Status: "Not Found",
 			Error:  "",
-			Data:   "OP Não encontrada",
+			Data:   fmt.Sprintf("op '%s' nao encontrada", NewOP.Cod),
 		})
-		return 
+		return
 	}
-	excels := gerarExcel(data, NewOP.Cod)
+
+	if hasNullGTIN(data) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(models.Response{
+			Status: "Invalid Code",
+			Error:  "",
+			Data:   fmt.Sprintf("existem produtos da op '%s' sem GTIN cadastrado", NewOP.Cod),
+		})
+		return
+	}
+
+	excels, err := excelOP(data).WriteToBuffer()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(models.Response{
+			Status: "internal error",
+			Error:  "",
+			Data:   "Erro ao gerar Excel",
+		})
+		return
+	}
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("access-control-expose-headers", "*")
 	w.Header().Set("Content-Type", "application/json")
-
-	w.Header().Set("IdEx", excels)
-	json.NewEncoder(w).Encode(models.ResponseExcell{
+	b, _ := ioutil.ReadAll(excels)
+	json.NewEncoder(w).Encode(models.ResponseExcel{
 		Status: "OK",
 		Error:  "",
 		Data:   data,
-		Id:     excels,
+		Excel:  b,
 	})
+}
+
+func hasNullGTIN(ops []sql.Op) bool {
+	for i := 0; i < len(ops); i++ {
+		if ops[i].Ean == nil {
+			return true
+		}
+	}
+	return false
 }

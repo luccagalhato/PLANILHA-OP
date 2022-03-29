@@ -24,10 +24,10 @@ type Excel struct {
 	Value io.Reader
 }
 
-//ResponseExcell ...
-type ResponseExcell struct {
+//ResponseExcel ...
+type ResponseExcel struct {
 	Status string
 	Error  string
 	Data   interface{}
-	Id     interface{}
+	Excel  interface{}
 }
