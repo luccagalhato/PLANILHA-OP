@@ -124,13 +124,14 @@
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr id="tr">
+                                            <th data-field="image">Image</th>
                                             <th data-field="ref">Referência</th>
-                                            <th data-field="ean">Ean-13 </th>
+                                            <th data-field="ean">Ean-13</th>
                                             <th data-field="nome">Nome</th>
-                                            <th data-field="cor">COR</th>
-                                            <th data-field="tamanho">Tamanho</th>
-                                            <th data-field="unidade">Unidade peça</th>
-                                            <th data-field="quantidade">Quantidade</th>
+                                            <th data-field="cor">cor</th>
+                                            <th data-field="tamanho">Tam</th>
+                                            <th data-field="unidade">UN</th>
+                                            <th data-field="quantidade">Qtd</th>
                                             <th data-field="extra1">Extra 1</th>
                                             <th data-field="extra2">Extra 2</th>
                                             <th data-field="Extra20">Extra 20</th>
@@ -202,6 +203,13 @@
         input[type="file"] {
             display: none;
         }
+
+        img {
+            max-height: 100px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
     </style>
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
@@ -227,10 +235,9 @@
             }
         )
         var $table = $("#dataTable").DataTable({
-            "columnDefs": [{
-                "data": null,
-
-            }]
+            "columnDefs": [
+                { "width": "15%", "targets": 3 }
+            ]
         });
         let username = localStorage.getItem("Username")
         // await username.set("Username", localStorage.getItem("Username"))
@@ -299,6 +306,7 @@
                     cache: "default",
                     body: body,
                 };
+<<<<<<< HEAD
                 var response = await fetch(
                     `
                     $ {
@@ -307,6 +315,47 @@
                     myInit
                 );
                 var myBlob = await response.blob();
+=======
+                const response = await fetch(`${window.location.protocol}//${window.location.host}/selectop`, myInit);
+                const blob = await response.blob();
+                const text = await blob.text();
+                const data = JSON.parse(text);
+
+                if (data.Status != "OK") {
+                    // console.log("Error", data.Error);
+                    alert(data.Data);
+                    return;
+                }
+                // removeAllChildNodes(document.getElementById("tbody"))
+                let OPS = data.Data;
+                xlsxData = data.Excel;
+                var rows = [];
+                OPS.forEach((item, index) => {
+                    rows.push([`<img src=\"https://api.boxdelivery.tbfg.com.br:11900/photos/${item.referencia}.jpeg" alt="${item.referencia}">`, item.referencia, item.ean13, item.nome, item.cor, item.tamanho, item.unidade, item.quantidade, item.extra1, item.extra2, item.extra20, item.grupo]);
+                });
+                $table.rows.add(rows).draw();
+                return
+            }
+            alert("Favor inserir OP");
+        }
+        // document.getElementById("Inputmodalncm").addEventListener('focusout', async function(e) {
+        //     await SelectOP(e.target.value)
+        // });
+
+        function toBlob(b64) {
+            const byteCharacters = atob(b64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            return new Blob([byteArray], { type: 'audio/mp3' });
+        }
+
+        async function downloadFile() {
+            if (xlsxData != null) {
+                var myBlob = toBlob(xlsxData);
+>>>>>>> 7897d28 (.)
                 var a = document.createElement("a");
                 var url = window.URL.createObjectURL(myBlob);
                 a.href = url;
